@@ -1,5 +1,8 @@
 package org.olmedo.webapp.jaxws.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -16,7 +19,13 @@ public class Curso {
     private String descripcion;
 
    // @XmlTransient // con esto el instructor no se envia en el xml se genera el xml pero sin el instructor
-    private String instructor;
+   // @JsonbTransient  //para no incluir en el json el instrusctor
+    //@JsonIgnore // es lo mismo que @jsonbTransient pero usando la dependencia de resteasy-jackson2 provided esta es mas
+    //robusta
+    @JsonIgnoreProperties({"cursos", "handler", "hibernateLazyInitializer"}) // para que no muestre los json curso instructor que estan anidados json curso con esto detenemos la jerarquia recursiva
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Instructor instructor;
+
     private Double duracion;
 
     public Curso() {
@@ -51,11 +60,11 @@ public class Curso {
         this.descripcion = descripcion;
     }
 
-    public String getInstructor() {
+    public Instructor getInstructor() {
         return instructor;
     }
 
-    public void setInstructor(String instructor) {
+    public void setInstructor(Instructor instructor) {
         this.instructor = instructor;
     }
 
